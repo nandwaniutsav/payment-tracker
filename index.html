@@ -221,27 +221,7 @@
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
-      <svg viewBox="0 0 520 130" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:340px">
-        <!-- NH monogram box -->
-        <rect x="2" y="2" width="110" height="126" fill="none" stroke="#E24B4A" stroke-width="8"/>
-        <!-- diagonal slash -->
-        <line x1="2" y1="128" x2="48" y2="68" stroke="#fff" stroke-width="10"/>
-        <!-- H left bar -->
-        <rect x="18" y="38" width="28" height="54" fill="none" stroke="#fff" stroke-width="8"/>
-        <!-- H right bar -->
-        <rect x="68" y="38" width="28" height="54" fill="none" stroke="#fff" stroke-width="8"/>
-        <!-- H crossbar -->
-        <line x1="68" y1="65" x2="96" y2="65" stroke="#fff" stroke-width="8"/>
-        <!-- NANDWANI -->
-        <text x="126" y="62" font-family="Arial Black,sans-serif" font-size="58" font-weight="900" fill="#E24B4A">NANDWANI</text>
-        <!-- lines -->
-        <line x1="126" y1="74" x2="518" y2="74" stroke="#fff" stroke-width="2.5"/>
-        <line x1="126" y1="102" x2="518" y2="102" stroke="#fff" stroke-width="2.5"/>
-        <!-- HANDLOOM -->
-        <text x="322" y="96" font-family="Arial Black,sans-serif" font-size="22" font-weight="900" fill="#fff" text-anchor="middle">HANDLOOM</text>
-        <!-- tagline -->
-        <text x="322" y="122" font-family="Arial,sans-serif" font-size="12" fill="#888" text-anchor="middle" letter-spacing="1.2">EXCLUSIVE SHOWROOM OF FURNISHING ITEM</text>
-      </svg>
+      <img src="Beige_and_Black_Minimalist_Project_Deck_Presentation.png" alt="Nandwani Handloom" style="width:100%;max-width:320px;border-radius:6px"/>
     </div>
     <div class="login-title">Payment Tracker</div>
     <div class="login-sub">Sign in with your Nandwani Google account</div>
@@ -314,7 +294,10 @@
   <div class="modal">
     <div class="modal-header"><span class="modal-title">Add customer</span><button class="modal-close" onclick="closeModal('addModal')">×</button></div>
     <div class="form-grid">
-      <div class="field"><label>Name *</label><input id="inp_name" placeholder="e.g. Ramesh Gupta"/></div>
+      <div class="field"><label>Name *</label>
+        <input id="inp_name" placeholder="e.g. Ramesh Gupta" list="partyNameList" autocomplete="off"/>
+        <datalist id="partyNameList"></datalist>
+      </div>
       <div class="field"><label>Phone *</label><input id="inp_phone" placeholder="9876543210" type="tel"/></div>
       <div class="field"><label>Amount due *</label><input id="inp_amount" placeholder="5000" type="number" min="0"/></div>
       <div class="field"><label>Due date</label><input id="inp_due" type="date"/></div>
@@ -354,6 +337,14 @@
     <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px">Add more amount</div>
     <div class="form-grid" style="margin-bottom:10px">
       <div class="field"><label>Amount *</label><input id="add_amt" type="number" min="0" placeholder="3000"/></div>
+      <div class="field"><label>Store</label>
+        <select id="add_store">
+          <option value="">— select store —</option>
+          <option value="Nandwani Handloom">Nandwani Handloom</option>
+          <option value="Nandwani Interio">Nandwani Interio</option>
+          <option value="Home Glow">Home Glow</option>
+        </select>
+      </div>
       <div class="field"><label>Note</label><input id="add_note" placeholder="e.g. sofa purchase"/></div>
       <div class="field"><label>Due date</label><input id="add_due" type="date"/></div>
       <div class="field"><label>Reminder (for you)</label><input id="add_reminder" type="date"/></div>
@@ -364,6 +355,31 @@
       <button class="btn btn-wa" style="flex:1" onclick="openWACompose()">WhatsApp</button>
       <button class="btn" style="flex:1" onclick="markPaid()">Mark paid</button>
       <button class="btn" style="flex:1;color:var(--red-dark);border-color:var(--red-mid)" onclick="deleteCustomer()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT ENTRY MODAL -->
+<div class="modal-overlay" id="editEntryModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Edit entry</span><button class="modal-close" onclick="closeModal('editEntryModal')">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Amount *</label><input id="ee_amt" type="number" min="0" placeholder="3000"/></div>
+      <div class="field"><label>Store</label>
+        <select id="ee_store">
+          <option value="">— select store —</option>
+          <option value="Nandwani Handloom">Nandwani Handloom</option>
+          <option value="Nandwani Interio">Nandwani Interio</option>
+          <option value="Home Glow">Home Glow</option>
+        </select>
+      </div>
+      <div class="field"><label>Note</label><input id="ee_note" placeholder="e.g. sofa purchase"/></div>
+      <div class="field"><label>Due date</label><input id="ee_due" type="date"/></div>
+      <div class="field"><label>Reminder (for you)</label><input id="ee_reminder" type="date"/></div>
+    </div>
+    <div class="form-actions" style="margin-top:16px">
+      <button class="btn" onclick="closeModal('editEntryModal')">Cancel</button>
+      <button class="btn btn-red" onclick="saveEditEntry()">Save changes</button>
     </div>
   </div>
 </div>
@@ -535,6 +551,9 @@
     ['inp_name','inp_phone','inp_note'].forEach(id=>document.getElementById(id).value='');
     ['inp_amount','inp_due','inp_reminder'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('inp_store').value='';
+    // Populate existing party names for autocomplete
+    const dl=document.getElementById('partyNameList');
+    dl.innerHTML=window._customers.map(c=>`<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
     document.getElementById('addModal').classList.add('open');
   }
 
@@ -564,10 +583,16 @@
     document.getElementById('dm_reminder').textContent= fmtDate(nextReminder(c));
     document.getElementById('dm_ledger').innerHTML=(c.entries||[]).map((e,i)=>`
       <div class="ledger-row">
-        <div><div class="ledger-amount">${fmt(e.amount)}</div><div class="ledger-meta">${e.note||'—'} · Added ${fmtDate(e.date)}</div></div>
+        <div>
+          <div class="ledger-amount">${fmt(e.amount)}</div>
+          <div class="ledger-meta">${e.note||'—'}${e.store?' · <strong>'+e.store+'</strong>':''} · Added ${fmtDate(e.date)}</div>
+        </div>
         <div class="ledger-right">
           <div class="ledger-due">Due: ${fmtDate(e.due)}</div>
-          ${c.entries.length>1?`<button class="btn btn-sm" style="color:var(--red-dark);border-color:var(--red-mid)" onclick="removeEntry(${i});event.stopPropagation()">Remove</button>`:''}
+          <div style="display:flex;gap:4px;justify-content:flex-end;margin-top:5px">
+            <button class="btn btn-sm" onclick="openEditEntry(${i});event.stopPropagation()">✏️ Edit</button>
+            ${c.entries.length>1?`<button class="btn btn-sm" style="color:var(--red-dark);border-color:var(--red-mid)" onclick="removeEntry(${i});event.stopPropagation()">Remove</button>`:''}
+          </div>
         </div>
       </div>`).join('');
     ['add_amt','add_note','add_due','add_reminder'].forEach(id=>document.getElementById(id).value='');
@@ -580,10 +605,46 @@
     const c=window._customers.find(x=>x.id===activeId);
     await window._fbUpdate(activeId,{entries:[...(c.entries||[]),{
       id:'e'+Date.now(),amount:amt,
+      store:document.getElementById('add_store').value,
       due:document.getElementById('add_due').value,
       reminder:document.getElementById('add_reminder').value,
       note:document.getElementById('add_note').value.trim(),
       date:new Date().toISOString().slice(0,10)}]});
+    ['add_amt','add_note','add_due','add_reminder'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('add_store').value='';
+    openDetail(activeId);
+  }
+
+  let _editIdx=null;
+
+  function openEditEntry(idx){
+    const c=window._customers.find(x=>x.id===activeId);
+    const e=(c.entries||[])[idx];
+    if(!e) return;
+    _editIdx=idx;
+    document.getElementById('ee_amt').value      = e.amount||'';
+    document.getElementById('ee_store').value    = e.store||'';
+    document.getElementById('ee_note').value     = e.note||'';
+    document.getElementById('ee_due').value      = e.due||'';
+    document.getElementById('ee_reminder').value = e.reminder||'';
+    document.getElementById('editEntryModal').classList.add('open');
+  }
+
+  async function saveEditEntry(){
+    const amt=parseFloat(document.getElementById('ee_amt').value);
+    if(!amt){alert('Amount is required.');return;}
+    const c=window._customers.find(x=>x.id===activeId);
+    const entries=[...(c.entries||[])];
+    entries[_editIdx]={
+      ...entries[_editIdx],
+      amount:   amt,
+      store:    document.getElementById('ee_store').value,
+      note:     document.getElementById('ee_note').value.trim(),
+      due:      document.getElementById('ee_due').value,
+      reminder: document.getElementById('ee_reminder').value
+    };
+    await window._fbUpdate(activeId,{entries});
+    closeModal('editEntryModal');
     openDetail(activeId);
   }
 
@@ -608,7 +669,7 @@
     const c=window._customers.find(x=>x.id===activeId);
     const soon=(c.entries||[]).filter(e=>e.due).sort((a,b)=>a.due.localeCompare(b.due))[0];
     document.getElementById('wa_msg').value=
-      `Namaste ${c.name} ji,\n\nYeh Nandwani Handloom ki taraf se reminder hai.\n\nAapka outstanding balance: ${fmt(totalDue(c))}${soon?'\nDue date: '+fmtDate(soon.due):''}.\n\nKripya jald settlement karein.\n\nDhanyawad,\nNandwani Handloom, Ranchi`;
+      `Namaste ${c.name} ji,\n\nYeh Nandwani Handloom ki taraf se reminder hai.\n\nAapka outstanding balance: ${fmt(totalDue(c))}${soon?'\nDue date: '+fmtDate(soon.due):''}.\n\nKripya jald settlement karein.\n\nDhanyawad,\nNandwani Handloom, Katihar`;
     document.getElementById('waModal').classList.add('open');
   }
 
@@ -629,6 +690,7 @@
   window.removeEntry=removeEntry;   window.markPaid=markPaid;
   window.deleteCustomer=deleteCustomer; window.openWACompose=openWACompose;
   window.sendWA=sendWA; window.closeModal=closeModal; window.setCurrency=setCurrency;
+  window.openEditEntry=openEditEntry; window.saveEditEntry=saveEditEntry;
 </script>
 
 <script>
