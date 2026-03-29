@@ -21,6 +21,8 @@
       --amber-text: #633806;
       --green:      #EAF3DE;
       --green-text: #27500A;
+      --blue:       #EBF3FD;
+      --blue-text:  #1a4a7a;
       --gray-bg:    #F7F6F2;
       --gray-border:#E0DDD5;
       --text:       #1a1a1a;
@@ -33,10 +35,8 @@
     html { font-size: 15px; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--gray-bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-bottom: 40px;
+      background: var(--gray-bg); color: var(--text);
+      min-height: 100vh; padding-bottom: 40px;
     }
 
     /* ── Login ── */
@@ -51,6 +51,7 @@
       width: 100%; max-width: 400px; text-align: center;
     }
     .login-logo { margin-bottom: 28px; }
+    .login-logo img { width: 100%; max-width: 300px; border-radius: 6px; display: block; margin: 0 auto; }
     .login-title { color: #fff; font-size: 18px; font-weight: 600; margin-bottom: 6px; }
     .login-sub   { color: #666; font-size: 13px; margin-bottom: 28px; }
     .btn-google {
@@ -64,7 +65,6 @@
     .btn-google:active { transform: scale(0.97); }
     .login-note  { color: #444; font-size: 11px; margin-top: 18px; }
     #loginError  { color: var(--red); font-size: 13px; margin-top: 14px; display: none; }
-
     #appScreen { display: none; }
 
     /* ── Status bar ── */
@@ -81,6 +81,28 @@
     .header-left  { display: flex; align-items: center; gap: 14px; }
     .header-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; border-bottom: 2px solid var(--gray-border);
+      background: var(--white); padding: 0 16px;
+      position: sticky; top: 62px; z-index: 90;
+    }
+    .tab-btn {
+      padding: 12px 18px; font-size: 13px; font-weight: 600;
+      border: none; background: none; cursor: pointer; color: var(--text-muted);
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+      font-family: inherit; transition: color 0.15s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .tab-btn.active { color: var(--red); border-bottom-color: var(--red); }
+    .tab-btn:hover:not(.active) { color: var(--text); }
+    .tab-badge {
+      background: var(--red); color: #fff; font-size: 10px; font-weight: 700;
+      padding: 1px 6px; border-radius: 10px; min-width: 18px; text-align: center;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
     /* ── Buttons ── */
     .btn {
       font-size: 13px; font-weight: 500; cursor: pointer;
@@ -92,6 +114,8 @@
     .btn:active { transform: scale(0.97); }
     .btn-red  { background: var(--red); color: #fff; border-color: var(--red); }
     .btn-red:hover { background: #c73b3a; color: #fff; }
+    .btn-blue { background: #2563EB; color: #fff; border-color: #2563EB; }
+    .btn-blue:hover { background: #1d4ed8; color: #fff; }
     .btn-sm   { padding: 5px 10px; font-size: 12px; }
     .btn-wa   { background: #25D366; color: #fff; border-color: #25D366; }
     .btn-wa:hover { background: #1fad54; color: #fff; }
@@ -127,7 +151,7 @@
     .toolbar input { flex: 1; min-width: 160px; }
     .toolbar input:focus, .toolbar select:focus { border-color: var(--red); box-shadow: 0 0 0 2px rgba(226,75,74,0.12); }
 
-    /* ── Cards ── */
+    /* ── Customer cards ── */
     .customer-card {
       background: var(--white); border-radius: var(--radius-md);
       border: 1px solid var(--gray-border); padding: 14px 16px;
@@ -141,6 +165,7 @@
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 14px; flex-shrink: 0;
     }
+    .avatar.blue { background: var(--blue); color: var(--blue-text); }
     .card-body  { flex: 1; min-width: 0; }
     .card-name  { font-weight: 600; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .card-sub   { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -153,6 +178,7 @@
     .tag-soon    { background: var(--amber);       color: var(--amber-text); }
     .tag-ok      { background: var(--green);       color: var(--green-text); }
     .tag-nodate  { background: #f1efe8;            color: #5f5e5a; }
+    .tag-pending { background: var(--blue);        color: var(--blue-text); }
     .reminder-flag { font-size: 11px; color: var(--red); font-weight: 600; }
 
     /* ── Empty ── */
@@ -206,12 +232,54 @@
     .dm-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
     .dm-value { font-size: 16px; font-weight: 700; }
 
+    /* ── Pending bill card ── */
+    .pending-card {
+      background: var(--white); border-radius: var(--radius-md);
+      border: 1px solid var(--gray-border); padding: 14px 16px;
+      display: flex; align-items: flex-start; gap: 14px;
+      cursor: pointer; margin-bottom: 10px; transition: border-color 0.15s;
+    }
+    .pending-card:hover { border-color: #2563EB; }
+
+    /* ── Image upload ── */
+    .img-upload-area {
+      border: 2px dashed var(--gray-border); border-radius: var(--radius-sm);
+      padding: 14px; text-align: center; cursor: pointer;
+      transition: border-color 0.15s; position: relative; overflow: hidden;
+    }
+    .img-upload-area:hover { border-color: var(--red); }
+    .img-upload-area input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .img-upload-label { font-size: 12px; color: var(--text-muted); pointer-events: none; }
+    .img-previews { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .img-thumb-wrap { position: relative; width: 80px; height: 80px; }
+    .img-thumb { width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--gray-border); }
+    .img-thumb-del {
+      position: absolute; top: -6px; right: -6px; width: 20px; height: 20px;
+      background: var(--red); color: #fff; border: none; border-radius: 50%;
+      font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1;
+    }
+
+    /* ── Pending detail images ── */
+    .pending-images { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+    .pending-img { width: 100%; max-width: 220px; border-radius: var(--radius-sm); border: 1px solid var(--gray-border); cursor: zoom-in; }
+
+    /* ── Lightbox ── */
+    #lightbox {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+      z-index: 500; align-items: center; justify-content: center; cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img { max-width: 95vw; max-height: 95vh; border-radius: var(--radius-sm); }
+
     @media (max-width: 480px) {
       .form-grid { grid-template-columns: 1fr; }
       .detail-metrics { grid-template-columns: 1fr 1fr; }
       .metrics { grid-template-columns: 1fr 1fr; }
       .login-card { padding: 28px 20px; }
       header { padding: 10px 14px; }
+      .tab-btn { padding: 10px 12px; font-size: 12px; }
     }
   </style>
 </head>
@@ -221,7 +289,7 @@
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
-      <img src="Beige_and_Black_Minimalist_Project_Deck_Presentation.png" alt="Nandwani Handloom" style="width:100%;max-width:320px;border-radius:6px"/>
+      <img id="loginLogoImg" src="logo.png" alt="Nandwani Handloom"/>
     </div>
     <div class="login-title">Payment Tracker</div>
     <div class="login-sub">Sign in with your Nandwani Google account</div>
@@ -264,32 +332,61 @@
         <option value="£">£ GBP</option>
         <option value="AED">AED</option>
       </select>
-      <button class="btn btn-red" onclick="openAddModal()">+ Add</button>
+      <button class="btn btn-red" id="headerAddBtn" onclick="openAddModal()">+ Add</button>
       <button class="btn-logout" onclick="doSignOut()">Sign out</button>
     </div>
   </header>
 
-  <div class="container">
-    <div class="metrics">
-      <div class="metric-card"><div class="metric-label">Total outstanding</div><div class="metric-value red" id="m-total">—</div></div>
-      <div class="metric-card"><div class="metric-label">Customers</div><div class="metric-value" id="m-count">—</div></div>
-      <div class="metric-card"><div class="metric-label">Overdue</div><div class="metric-value red" id="m-overdue">—</div></div>
-      <div class="metric-card"><div class="metric-label">Due this week</div><div class="metric-value" id="m-soon">—</div></div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-btn-ledger" onclick="switchTab('ledger',this)">💳 Outstanding Ledger</button>
+    <button class="tab-btn" id="tab-btn-pending" onclick="switchTab('pending',this)">📋 Pending Bills <span class="tab-badge" id="pendingBadge">0</span></button>
+  </div>
+
+  <!-- TAB: LEDGER -->
+  <div class="tab-panel active" id="tab-ledger">
+    <div class="container">
+      <div class="metrics">
+        <div class="metric-card"><div class="metric-label">Total outstanding</div><div class="metric-value red" id="m-total">—</div></div>
+        <div class="metric-card"><div class="metric-label">Customers</div><div class="metric-value" id="m-count">—</div></div>
+        <div class="metric-card"><div class="metric-label">Overdue</div><div class="metric-value red" id="m-overdue">—</div></div>
+        <div class="metric-card"><div class="metric-label">Due this week</div><div class="metric-value" id="m-soon">—</div></div>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="searchBox" placeholder="Search name or phone..." oninput="renderList()"/>
+        <select id="filterStatus" onchange="renderList()">
+          <option value="all">All</option>
+          <option value="overdue">Overdue</option>
+          <option value="soon">Due this week</option>
+          <option value="ok">Clear</option>
+        </select>
+      </div>
+      <div id="listContainer"><div style="text-align:center;padding:60px;color:var(--text-muted)">Loading...</div></div>
     </div>
-    <div class="toolbar">
-      <input type="text" id="searchBox" placeholder="Search name or phone..." oninput="renderList()"/>
-      <select id="filterStatus" onchange="renderList()">
-        <option value="all">All</option>
-        <option value="overdue">Overdue</option>
-        <option value="soon">Due this week</option>
-        <option value="ok">Clear</option>
-      </select>
+  </div>
+
+  <!-- TAB: PENDING BILLS -->
+  <div class="tab-panel" id="tab-pending">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:15px;font-weight:700">Pending Bills</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px">People you need to make bills for — amount not yet computed</div>
+        </div>
+        <button class="btn btn-blue" onclick="openAddPendingModal()">+ Add pending</button>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="pendingSearch" placeholder="Search by name or notes..." oninput="renderPendingList()"/>
+      </div>
+      <div id="pendingListContainer"><div style="text-align:center;padding:60px;color:var(--text-muted)">Loading...</div></div>
     </div>
-    <div id="listContainer"><div style="text-align:center;padding:60px;color:var(--text-muted)">Loading...</div></div>
   </div>
 </div>
 
-<!-- ADD MODAL -->
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()"><img id="lightboxImg" src="" alt=""/></div>
+
+<!-- ADD CUSTOMER MODAL -->
 <div class="modal-overlay" id="addModal">
   <div class="modal">
     <div class="modal-header"><span class="modal-title">Add customer</span><button class="modal-close" onclick="closeModal('addModal')">×</button></div>
@@ -396,6 +493,66 @@
   </div>
 </div>
 
+<!-- ADD PENDING BILL MODAL -->
+<div class="modal-overlay" id="addPendingModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add Pending Bill</span><button class="modal-close" onclick="closeModal('addPendingModal')">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Name *</label>
+        <input id="pb_name" placeholder="e.g. Ramesh Gupta" list="partyNameList" autocomplete="off"/>
+      </div>
+      <div class="field"><label>Phone</label><input id="pb_phone" placeholder="9876543210" type="tel"/></div>
+      <div class="field"><label>Store</label>
+        <select id="pb_store">
+          <option value="">— select store —</option>
+          <option value="Nandwani Handloom">Nandwani Handloom</option>
+          <option value="Nandwani Interio">Nandwani Interio</option>
+          <option value="Home Glow">Home Glow</option>
+        </select>
+      </div>
+      <div class="field"><label>Date</label><input id="pb_date" type="date"/></div>
+    </div>
+    <div class="field" style="margin-top:12px"><label>Notes</label>
+      <textarea id="pb_notes" placeholder="Items sold, estimates, any context you need to remember..."></textarea>
+    </div>
+    <div style="margin-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Reference Photos (up to 2)</div>
+      <div class="img-upload-area">
+        <input type="file" accept="image/*" id="pb_img1_input" onchange="handleImgUpload(1)"/>
+        <div class="img-upload-label">📷 Tap to upload photo 1</div>
+      </div>
+      <div id="pb_preview1" class="img-previews"></div>
+      <div class="img-upload-area" style="margin-top:8px">
+        <input type="file" accept="image/*" id="pb_img2_input" onchange="handleImgUpload(2)"/>
+        <div class="img-upload-label">📷 Tap to upload photo 2</div>
+      </div>
+      <div id="pb_preview2" class="img-previews"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('addPendingModal')">Cancel</button>
+      <button class="btn btn-blue" onclick="addPendingBill()">Save pending bill</button>
+    </div>
+  </div>
+</div>
+
+<!-- PENDING DETAIL MODAL -->
+<div class="modal-overlay" id="pendingDetailModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <div><div class="modal-title" id="pd_name"></div><div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="pd_sub"></div></div>
+      <button class="modal-close" onclick="closeModal('pendingDetailModal')">×</button>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px" id="pd_date"></div>
+    <div style="font-size:13px;white-space:pre-wrap;line-height:1.65;margin-bottom:14px;background:var(--gray-bg);padding:12px;border-radius:var(--radius-sm)" id="pd_notes"></div>
+    <div class="pending-images" id="pd_images"></div>
+    <hr class="divider"/>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-red" style="flex:1" onclick="convertToLedger()">→ Convert to ledger entry</button>
+      <button class="btn" style="flex:1;color:var(--red-dark);border-color:var(--red-mid)" onclick="deletePendingBill()">Delete</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ FIREBASE MODULE ══ -->
 <script type="module">
   import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -404,32 +561,27 @@
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as fbSignOut }
                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  // ── REPLACE WITH YOUR FIREBASE CONFIG ─────────────────────────────────────
   const firebaseConfig = {
     apiKey: "AIzaSyCDtiwxVvCUGrhvHv1PdNtBXdu5XbeeyMY",
-  authDomain: "payment-tracker-5aa9d.firebaseapp.com",
-  projectId: "payment-tracker-5aa9d",
-  storageBucket: "payment-tracker-5aa9d.firebasestorage.app",
-  messagingSenderId: "542817413016",
-  appId: "1:542817413016:web:9056db2b5f03f6e6b26ded"
+    authDomain: "payment-tracker-5aa9d.firebaseapp.com",
+    projectId: "payment-tracker-5aa9d",
+    storageBucket: "payment-tracker-5aa9d.firebasestorage.app",
+    messagingSenderId: "542817413016",
+    appId: "1:542817413016:web:9056db2b5f03f6e6b26ded"
   };
-  // ──────────────────────────────────────────────────────────────────────────
 
-  const ALLOWED = [
-    "utsavnandwani0722@gmail.com",
-    "yougeshnandwani@gmail.com"
-  ];
+  const ALLOWED = ["utsavnandwani0722@gmail.com","yougeshnandwani@gmail.com"];
 
   const app      = initializeApp(firebaseConfig);
   const db       = getFirestore(app);
   const auth     = getAuth(app);
   const provider = new GoogleAuthProvider();
   const colRef   = collection(db, "customers");
-  let unsub      = null;
+  const pbColRef = collection(db, "pendingBills");
+  let unsub = null, unsubPB = null;
 
   onAuthStateChanged(auth, user => {
     if (user && ALLOWED.includes(user.email)) {
-      // authorised
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('appScreen').style.display   = 'block';
       const av = document.getElementById('userAvatar');
@@ -438,15 +590,22 @@
       if (!unsub) {
         unsub = onSnapshot(colRef, snap => {
           window._customers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-          window.renderAll();
-          window.updateStatus(true);
+          window.renderAll(); window.updateStatus(true);
         }, () => window.updateStatus(false));
+      }
+      if (!unsubPB) {
+        unsubPB = onSnapshot(pbColRef, snap => {
+          window._pendingBills = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          window.renderPendingList();
+          document.getElementById('pendingBadge').textContent = window._pendingBills.length;
+        });
       }
     } else {
       if (user) { fbSignOut(auth); document.getElementById('loginError').style.display = 'block'; }
       document.getElementById('loginScreen').style.display = 'flex';
       document.getElementById('appScreen').style.display   = 'none';
-      if (unsub) { unsub(); unsub = null; }
+      if (unsub)   { unsub();   unsub   = null; }
+      if (unsubPB) { unsubPB(); unsubPB = null; }
     }
   });
 
@@ -454,17 +613,28 @@
     document.getElementById('loginError').style.display = 'none';
     try { await signInWithPopup(auth, provider); } catch(e) { console.error(e); }
   };
-  window.doSignOut = async () => { if (unsub) { unsub(); unsub = null; } await fbSignOut(auth); };
-  window._fbAdd    = d      => addDoc(colRef, { ...d, updatedAt: serverTimestamp() });
-  window._fbUpdate = (id,d) => updateDoc(doc(db,"customers",id), { ...d, updatedAt: serverTimestamp() });
-  window._fbDelete = id     => deleteDoc(doc(db,"customers",id));
+  window.doSignOut = async () => {
+    if (unsub)   { unsub();   unsub   = null; }
+    if (unsubPB) { unsubPB(); unsubPB = null; }
+    await fbSignOut(auth);
+  };
+  window._fbAdd      = d      => addDoc(colRef,   { ...d, updatedAt: serverTimestamp() });
+  window._fbUpdate   = (id,d) => updateDoc(doc(db,"customers",id), { ...d, updatedAt: serverTimestamp() });
+  window._fbDelete   = id     => deleteDoc(doc(db,"customers",id));
+  window._fbPBAdd    = d      => addDoc(pbColRef, { ...d, createdAt: serverTimestamp() });
+  window._fbPBDelete = id     => deleteDoc(doc(db,"pendingBills",id));
 </script>
 
 <!-- ══ APP LOGIC ══ -->
 <script>
-  window._customers = [];
-  let currency = localStorage.getItem('nn_currency') || '₹';
-  let activeId = null;
+  window._customers    = [];
+  window._pendingBills = [];
+  let currency   = localStorage.getItem('nn_currency') || '₹';
+  let activeId   = null;
+  let activePBId = null;
+  let _editIdx   = null;
+  let _pbImgs    = [null, null];
+
   document.getElementById('currencySelect').value = currency;
 
   function fmt(n)     { return currency + Math.round(n).toLocaleString('en-IN'); }
@@ -499,6 +669,19 @@
   window.addEventListener('offline',()=>updateStatus(false));
   window.addEventListener('online', ()=>updateStatus(true));
 
+  // ── Tab switching ──
+  function switchTab(name, btn){
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-'+name).classList.add('active');
+    btn.classList.add('active');
+    const addBtn = document.getElementById('headerAddBtn');
+    if(name==='pending'){ addBtn.onclick = openAddPendingModal; }
+    else                { addBtn.onclick = openAddModal; }
+  }
+  window.switchTab = switchTab;
+
+  // ── Ledger ──
   function renderAll(){ renderMetrics(); renderList(); }
   window.renderAll = renderAll;
 
@@ -547,13 +730,152 @@
     }).join('');
   }
 
+  // ── Pending Bills ──
+  function renderPendingList(){
+    const q=(document.getElementById('pendingSearch').value||'').toLowerCase();
+    let list=window._pendingBills
+      .filter(b=>b.name.toLowerCase().includes(q)||(b.notes||'').toLowerCase().includes(q))
+      .sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    const el=document.getElementById('pendingListContainer');
+    if(!list.length){
+      el.innerHTML=`<div class="empty"><div class="empty-icon">📋</div><p>${window._pendingBills.length===0?'No pending bills. Tap + Add pending to log one.':'No results.'}</p></div>`;
+      return;
+    }
+    el.innerHTML=list.map(b=>`
+      <div class="pending-card" onclick="openPendingDetail('${b.id}')">
+        <div class="avatar blue">${initials(b.name)}</div>
+        <div class="card-body">
+          <div class="card-name">${b.name}</div>
+          <div class="card-sub">${[b.phone,b.store].filter(Boolean).join(' · ')}</div>
+          ${b.notes?`<div class="card-sub" style="margin-top:3px;white-space:normal">${b.notes.slice(0,80)}${b.notes.length>80?'…':''}</div>`:''}
+        </div>
+        <div class="card-right" style="flex-shrink:0">
+          <span class="tag tag-pending">Pending</span>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:5px">${b.date?fmtDate(b.date):''}</div>
+          ${(b.img1||b.img2)?`<div style="font-size:11px;color:var(--text-muted);margin-top:3px">📷 ${[b.img1,b.img2].filter(Boolean).length}</div>`:''}
+        </div>
+      </div>`).join('');
+  }
+  window.renderPendingList = renderPendingList;
+
+  function openAddPendingModal(){
+    ['pb_name','pb_phone','pb_notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pb_store').value='';
+    document.getElementById('pb_date').value=new Date().toISOString().slice(0,10);
+    _pbImgs=[null,null];
+    [1,2].forEach(n=>{
+      document.getElementById('pb_preview'+n).innerHTML='';
+      document.getElementById('pb_img'+n+'_input').value='';
+    });
+    const dl=document.getElementById('partyNameList');
+    dl.innerHTML=window._customers.map(c=>`<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
+    document.getElementById('addPendingModal').classList.add('open');
+  }
+  window.openAddPendingModal = openAddPendingModal;
+
+  function handleImgUpload(slot){
+    const file=document.getElementById('pb_img'+slot+'_input').files[0];
+    if(!file) return;
+    // Resize to max 800px wide before storing to keep Firestore doc small
+    const reader=new FileReader();
+    reader.onload=function(ev){
+      const img=new Image();
+      img.onload=function(){
+        const MAX=800;
+        let w=img.width, h=img.height;
+        if(w>MAX){ h=Math.round(h*MAX/w); w=MAX; }
+        const canvas=document.createElement('canvas');
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        const b64=canvas.toDataURL('image/jpeg',0.75);
+        _pbImgs[slot-1]=b64;
+        document.getElementById('pb_preview'+slot).innerHTML=`
+          <div class="img-thumb-wrap">
+            <img class="img-thumb" src="${b64}"/>
+            <button class="img-thumb-del" onclick="clearImg(${slot})" type="button">×</button>
+          </div>`;
+      };
+      img.src=ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  window.handleImgUpload = handleImgUpload;
+
+  function clearImg(slot){
+    _pbImgs[slot-1]=null;
+    document.getElementById('pb_preview'+slot).innerHTML='';
+    document.getElementById('pb_img'+slot+'_input').value='';
+  }
+  window.clearImg = clearImg;
+
+  async function addPendingBill(){
+    const name=document.getElementById('pb_name').value.trim();
+    if(!name){alert('Name is required.');return;}
+    try{
+      await window._fbPBAdd({
+        name, phone: document.getElementById('pb_phone').value.trim(),
+        store: document.getElementById('pb_store').value,
+        date:  document.getElementById('pb_date').value,
+        notes: document.getElementById('pb_notes').value.trim(),
+        img1:  _pbImgs[0]||null, img2: _pbImgs[1]||null
+      });
+      closeModal('addPendingModal');
+    }catch(e){alert('Save failed: '+e.message);}
+  }
+  window.addPendingBill = addPendingBill;
+
+  function openPendingDetail(id){
+    activePBId=id;
+    const b=window._pendingBills.find(x=>x.id===id);
+    if(!b) return;
+    document.getElementById('pd_name').textContent = b.name;
+    document.getElementById('pd_sub').textContent  = [b.phone,b.store].filter(Boolean).join(' · ');
+    document.getElementById('pd_date').textContent = b.date?'Date: '+fmtDate(b.date):'';
+    document.getElementById('pd_notes').textContent = b.notes||'(no notes added)';
+    document.getElementById('pd_images').innerHTML  = [b.img1,b.img2].filter(Boolean)
+      .map(src=>`<img class="pending-img" src="${src}" onclick="openLightbox(this.src)"/>`).join('');
+    document.getElementById('pendingDetailModal').classList.add('open');
+  }
+  window.openPendingDetail = openPendingDetail;
+
+  async function deletePendingBill(){
+    if(!confirm('Delete this pending bill?')) return;
+    await window._fbPBDelete(activePBId);
+    closeModal('pendingDetailModal');
+  }
+  window.deletePendingBill = deletePendingBill;
+
+  async function convertToLedger(){
+    const b=window._pendingBills.find(x=>x.id===activePBId);
+    if(!b) return;
+    closeModal('pendingDetailModal');
+    // Switch to ledger tab
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('tab-ledger').classList.add('active');
+    document.getElementById('tab-btn-ledger').classList.add('active');
+    // Prefill add modal
+    ['inp_amount','inp_due','inp_reminder'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('inp_name').value  = b.name;
+    document.getElementById('inp_phone').value = b.phone||'';
+    document.getElementById('inp_store').value = b.store||'';
+    document.getElementById('inp_note').value  = b.notes||'';
+    document.getElementById('addModal').classList.add('open');
+  }
+  window.convertToLedger = convertToLedger;
+
+  // ── Lightbox ──
+  function openLightbox(src){ document.getElementById('lightboxImg').src=src; document.getElementById('lightbox').classList.add('open'); }
+  function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); }
+  window.openLightbox=openLightbox; window.closeLightbox=closeLightbox;
+
+  // ── Add Customer ──
   function openAddModal(){
     ['inp_name','inp_phone','inp_note'].forEach(id=>document.getElementById(id).value='');
     ['inp_amount','inp_due','inp_reminder'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('inp_store').value='';
-    // Populate existing party names for autocomplete
-    const dl=document.getElementById('partyNameList');
-    dl.innerHTML=window._customers.map(c=>`<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
+    document.getElementById('partyNameList').innerHTML=
+      window._customers.map(c=>`<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
     document.getElementById('addModal').classList.add('open');
   }
 
@@ -572,6 +894,7 @@
     }catch(e){alert('Save failed: '+e.message);}
   }
 
+  // ── Detail ──
   function openDetail(id){
     activeId=id;
     const c=window._customers.find(x=>x.id===id);
@@ -596,6 +919,7 @@
         </div>
       </div>`).join('');
     ['add_amt','add_note','add_due','add_reminder'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('add_store').value='';
     document.getElementById('detailModal').classList.add('open');
   }
 
@@ -604,7 +928,7 @@
     if(!amt){alert('Enter an amount.');return;}
     const c=window._customers.find(x=>x.id===activeId);
     await window._fbUpdate(activeId,{entries:[...(c.entries||[]),{
-      id:'e'+Date.now(),amount:amt,
+      id:'e'+Date.now(), amount:amt,
       store:document.getElementById('add_store').value,
       due:document.getElementById('add_due').value,
       reminder:document.getElementById('add_reminder').value,
@@ -614,8 +938,6 @@
     document.getElementById('add_store').value='';
     openDetail(activeId);
   }
-
-  let _editIdx=null;
 
   function openEditEntry(idx){
     const c=window._customers.find(x=>x.id===activeId);
@@ -635,17 +957,14 @@
     if(!amt){alert('Amount is required.');return;}
     const c=window._customers.find(x=>x.id===activeId);
     const entries=[...(c.entries||[])];
-    entries[_editIdx]={
-      ...entries[_editIdx],
-      amount:   amt,
-      store:    document.getElementById('ee_store').value,
-      note:     document.getElementById('ee_note').value.trim(),
-      due:      document.getElementById('ee_due').value,
+    entries[_editIdx]={...entries[_editIdx],
+      amount: amt, store: document.getElementById('ee_store').value,
+      note: document.getElementById('ee_note').value.trim(),
+      due: document.getElementById('ee_due').value,
       reminder: document.getElementById('ee_reminder').value
     };
     await window._fbUpdate(activeId,{entries});
-    closeModal('editEntryModal');
-    openDetail(activeId);
+    closeModal('editEntryModal'); openDetail(activeId);
   }
 
   async function removeEntry(idx){
@@ -685,12 +1004,13 @@
     el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
   });
 
-  window.openAddModal=openAddModal; window.addCustomer=addCustomer;
-  window.openDetail=openDetail;     window.addEntry=addEntry;
-  window.removeEntry=removeEntry;   window.markPaid=markPaid;
+  window.openAddModal=openAddModal;     window.addCustomer=addCustomer;
+  window.openDetail=openDetail;         window.addEntry=addEntry;
+  window.removeEntry=removeEntry;       window.markPaid=markPaid;
   window.deleteCustomer=deleteCustomer; window.openWACompose=openWACompose;
-  window.sendWA=sendWA; window.closeModal=closeModal; window.setCurrency=setCurrency;
-  window.openEditEntry=openEditEntry; window.saveEditEntry=saveEditEntry;
+  window.sendWA=sendWA;                 window.closeModal=closeModal;
+  window.setCurrency=setCurrency;       window.openEditEntry=openEditEntry;
+  window.saveEditEntry=saveEditEntry;
 </script>
 
 <script>
