@@ -23,6 +23,8 @@
       --green-text: #27500A;
       --blue:       #EBF3FD;
       --blue-text:  #1a4a7a;
+      --teal:       #E0F5F2;
+      --teal-text:  #0d5c52;
       --gray-bg:    #F7F6F2;
       --gray-border:#E0DDD5;
       --text:       #1a1a1a;
@@ -116,6 +118,8 @@
     .btn-red:hover { background: #c73b3a; color: #fff; }
     .btn-blue { background: #2563EB; color: #fff; border-color: #2563EB; }
     .btn-blue:hover { background: #1d4ed8; color: #fff; }
+    .btn-green { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .btn-green:hover { background: #15803d; color: #fff; }
     .btn-sm   { padding: 5px 10px; font-size: 12px; }
     .btn-wa   { background: #25D366; color: #fff; border-color: #25D366; }
     .btn-wa:hover { background: #1fad54; color: #fff; }
@@ -165,7 +169,8 @@
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 14px; flex-shrink: 0;
     }
-    .avatar.blue { background: var(--blue); color: var(--blue-text); }
+    .avatar.blue  { background: var(--blue);  color: var(--blue-text); }
+    .avatar.green { background: var(--green); color: var(--green-text); }
     .card-body  { flex: 1; min-width: 0; }
     .card-name  { font-weight: 600; font-size: 14px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .card-sub   { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -179,7 +184,34 @@
     .tag-ok      { background: var(--green);       color: var(--green-text); }
     .tag-nodate  { background: #f1efe8;            color: #5f5e5a; }
     .tag-pending { background: var(--blue);        color: var(--blue-text); }
+    .tag-paid    { background: var(--teal);        color: var(--teal-text); }
     .reminder-flag { font-size: 11px; color: var(--red); font-weight: 600; }
+
+    /* ── Toggle switch ── */
+    .toggle-wrap {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--gray-bg); border: 1px solid var(--gray-border);
+      border-radius: var(--radius-sm); padding: 9px 12px;
+      cursor: pointer; user-select: none;
+    }
+    .toggle-wrap:hover { border-color: var(--red); }
+    .toggle-switch {
+      position: relative; width: 36px; height: 20px; flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider {
+      position: absolute; inset: 0; background: #ccc;
+      border-radius: 20px; transition: background 0.2s; cursor: pointer;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute; width: 14px; height: 14px;
+      background: white; border-radius: 50%;
+      left: 3px; top: 3px; transition: transform 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--red); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(16px); }
+    .toggle-label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .toggle-label span { color: var(--red); }
 
     /* ── Empty ── */
     .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); }
@@ -218,19 +250,34 @@
     .divider { border: none; border-top: 1px solid var(--gray-border); margin: 16px 0; }
     .form-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
 
-    /* ── Ledger ── */
+    /* ── Ledger rows ── */
     .ledger-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--gray-border); gap: 8px; }
     .ledger-row:last-child { border-bottom: none; }
     .ledger-amount { font-weight: 700; font-size: 15px; color: var(--red); }
+    .ledger-amount.payment { color: var(--green-text); }
     .ledger-meta   { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     .ledger-right  { text-align: right; flex-shrink: 0; }
     .ledger-due    { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+
+    /* ── Section header ── */
+    .section-hdr {
+      font-size: 11px; font-weight: 600; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
 
     /* ── Detail metrics ── */
     .detail-metrics { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 16px; }
     .dm-card  { background: var(--gray-bg); border-radius: var(--radius-sm); padding: 10px 12px; }
     .dm-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
     .dm-value { font-size: 16px; font-weight: 700; }
+
+    /* ── Payment record strip ── */
+    .payment-strip {
+      background: #f0faf5; border: 1px solid #bbddc9; border-radius: var(--radius-md);
+      padding: 14px 16px; margin-bottom: 14px;
+    }
+    .payment-strip-title { font-size: 12px; font-weight: 700; color: var(--green-text); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.4px; }
 
     /* ── Pending bill card ── */
     .pending-card {
@@ -409,6 +456,18 @@
       </div>
     </div>
     <div class="field" style="margin-top:12px"><label>Note</label><textarea id="inp_note" placeholder="Optional note..."></textarea></div>
+
+    <!-- Regular customer toggle -->
+    <div style="margin-top:14px">
+      <label class="toggle-wrap" for="inp_regular">
+        <div class="toggle-switch">
+          <input type="checkbox" id="inp_regular"/>
+          <span class="toggle-slider"></span>
+        </div>
+        <span class="toggle-label">Save as <span>regular customer</span> (name remembered for autocomplete)</span>
+      </label>
+    </div>
+
     <div class="form-actions">
       <button class="btn" onclick="closeModal('addModal')">Cancel</button>
       <button class="btn btn-red" onclick="addCustomer()">Add customer</button>
@@ -424,14 +483,43 @@
       <button class="modal-close" onclick="closeModal('detailModal')">×</button>
     </div>
     <div class="detail-metrics">
-      <div class="dm-card"><div class="dm-label">Total due</div><div class="dm-value" style="color:var(--red)" id="dm_total"></div></div>
+      <div class="dm-card"><div class="dm-label">Total billed</div><div class="dm-value" id="dm_billed"></div></div>
+      <div class="dm-card"><div class="dm-label">Paid</div><div class="dm-value" style="color:var(--green-text)" id="dm_paid"></div></div>
+      <div class="dm-card"><div class="dm-label">Balance due</div><div class="dm-value" style="color:var(--red)" id="dm_total"></div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
       <div class="dm-card"><div class="dm-label">Entries</div><div class="dm-value" id="dm_entries"></div></div>
       <div class="dm-card"><div class="dm-label">Next reminder</div><div class="dm-value" style="font-size:13px" id="dm_reminder"></div></div>
     </div>
-    <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Ledger</div>
+
+    <!-- Ledger entries -->
+    <div class="section-hdr">Ledger</div>
     <div id="dm_ledger"></div>
+
     <hr class="divider"/>
-    <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px">Add more amount</div>
+
+    <!-- Payment history -->
+    <div class="section-hdr" id="pm_hdr_wrap">
+      Payment history
+      <span id="dm_payments_total" style="color:var(--green-text);font-size:12px"></span>
+    </div>
+    <div id="dm_payments"></div>
+
+    <hr class="divider"/>
+
+    <!-- Record a payment -->
+    <div class="payment-strip">
+      <div class="payment-strip-title">💰 Record a payment received</div>
+      <div class="form-grid" style="margin-bottom:10px">
+        <div class="field"><label>Amount paid *</label><input id="pay_amt" type="number" min="0" placeholder="2000"/></div>
+        <div class="field"><label>Date</label><input id="pay_date" type="date"/></div>
+      </div>
+      <div class="field" style="margin-bottom:10px"><label>Note</label><input id="pay_note" placeholder="e.g. cash payment, UPI ref #..."/></div>
+      <button class="btn btn-green" style="width:100%" onclick="recordPayment()">✓ Save payment</button>
+    </div>
+
+    <!-- Add more amount -->
+    <div class="section-hdr" style="margin-bottom:10px">Add more amount</div>
     <div class="form-grid" style="margin-bottom:10px">
       <div class="field"><label>Amount *</label><input id="add_amt" type="number" min="0" placeholder="3000"/></div>
       <div class="field"><label>Store</label>
@@ -447,10 +535,11 @@
       <div class="field"><label>Reminder (for you)</label><input id="add_reminder" type="date"/></div>
     </div>
     <button class="btn btn-red" style="width:100%;margin-bottom:14px" onclick="addEntry()">+ Add amount to ledger</button>
+
     <hr class="divider"/>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-wa" style="flex:1" onclick="openWACompose()">WhatsApp</button>
-      <button class="btn" style="flex:1" onclick="markPaid()">Mark paid</button>
+      <button class="btn" style="flex:1" onclick="markPaid()">Mark fully paid</button>
       <button class="btn" style="flex:1;color:var(--red-dark);border-color:var(--red-mid)" onclick="deleteCustomer()">Delete</button>
     </div>
   </div>
@@ -515,6 +604,18 @@
     <div class="field" style="margin-top:12px"><label>Notes</label>
       <textarea id="pb_notes" placeholder="Items sold, estimates, any context you need to remember..."></textarea>
     </div>
+
+    <!-- Regular customer toggle -->
+    <div style="margin-top:14px">
+      <label class="toggle-wrap" for="pb_regular">
+        <div class="toggle-switch">
+          <input type="checkbox" id="pb_regular"/>
+          <span class="toggle-slider"></span>
+        </div>
+        <span class="toggle-label">Save as <span>regular customer</span> (name remembered for autocomplete)</span>
+      </label>
+    </div>
+
     <div style="margin-top:14px">
       <div style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px">Reference Photos (up to 2)</div>
       <div class="img-upload-area">
@@ -556,7 +657,7 @@
 <!-- ══ FIREBASE MODULE ══ -->
 <script type="module">
   import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, serverTimestamp }
+  import { getFirestore, collection, doc, onSnapshot, addDoc, updateDoc, deleteDoc, getDocs, setDoc, serverTimestamp }
                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut as fbSignOut }
                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -578,7 +679,8 @@
   const provider = new GoogleAuthProvider();
   const colRef   = collection(db, "customers");
   const pbColRef = collection(db, "pendingBills");
-  let unsub = null, unsubPB = null;
+  const rcColRef = collection(db, "regularCustomers");  // new
+  let unsub = null, unsubPB = null, unsubRC = null;
 
   onAuthStateChanged(auth, user => {
     if (user && ALLOWED.includes(user.email)) {
@@ -587,6 +689,7 @@
       const av = document.getElementById('userAvatar');
       if (user.photoURL) { av.src = user.photoURL; av.style.display = 'block'; }
       document.getElementById('userName').textContent = user.displayName?.split(' ')[0] || user.email;
+
       if (!unsub) {
         unsub = onSnapshot(colRef, snap => {
           window._customers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -600,12 +703,19 @@
           document.getElementById('pendingBadge').textContent = window._pendingBills.length;
         });
       }
+      if (!unsubRC) {
+        unsubRC = onSnapshot(rcColRef, snap => {
+          window._regularCustomers = snap.docs.map(d => d.data().name).filter(Boolean).sort();
+          window.refreshAutocomplete();
+        });
+      }
     } else {
       if (user) { fbSignOut(auth); document.getElementById('loginError').style.display = 'block'; }
       document.getElementById('loginScreen').style.display = 'flex';
       document.getElementById('appScreen').style.display   = 'none';
       if (unsub)   { unsub();   unsub   = null; }
       if (unsubPB) { unsubPB(); unsubPB = null; }
+      if (unsubRC) { unsubRC(); unsubRC = null; }
     }
   });
 
@@ -616,19 +726,28 @@
   window.doSignOut = async () => {
     if (unsub)   { unsub();   unsub   = null; }
     if (unsubPB) { unsubPB(); unsubPB = null; }
+    if (unsubRC) { unsubRC(); unsubRC = null; }
     await fbSignOut(auth);
   };
+
   window._fbAdd      = d      => addDoc(colRef,   { ...d, updatedAt: serverTimestamp() });
   window._fbUpdate   = (id,d) => updateDoc(doc(db,"customers",id), { ...d, updatedAt: serverTimestamp() });
   window._fbDelete   = id     => deleteDoc(doc(db,"customers",id));
   window._fbPBAdd    = d      => addDoc(pbColRef, { ...d, createdAt: serverTimestamp() });
   window._fbPBDelete = id     => deleteDoc(doc(db,"pendingBills",id));
+
+  // Regular customers: use the name as document ID (slug) so no duplicates
+  window._fbRCAdd = async (name) => {
+    const key = name.trim().toLowerCase().replace(/\s+/g,'_');
+    await setDoc(doc(db, "regularCustomers", key), { name: name.trim(), addedAt: serverTimestamp() });
+  };
 </script>
 
 <!-- ══ APP LOGIC ══ -->
 <script>
-  window._customers    = [];
-  window._pendingBills = [];
+  window._customers       = [];
+  window._pendingBills    = [];
+  window._regularCustomers = [];
   let currency   = localStorage.getItem('nn_currency') || '₹';
   let activeId   = null;
   let activePBId = null;
@@ -649,8 +768,14 @@
     return Math.round((d-t)/86400000);
   }
   function initials(n){ return n.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2); }
-  function totalDue(c){ return (c.entries||[]).reduce((s,e)=>s+(e.amount||0),0); }
+
+  // ── Balance helpers ──
+  function totalBilled(c)  { return (c.entries||[]).reduce((s,e)=>s+(e.amount||0),0); }
+  function totalPaid(c)    { return (c.payments||[]).reduce((s,p)=>s+(p.amount||0),0); }
+  function totalDue(c)     { return Math.max(0, totalBilled(c) - totalPaid(c)); }
+
   function tagOf(c){
+    if(totalDue(c)===0) return {label:'Settled',cls:'tag-paid'};
     const ds=(c.entries||[]).filter(e=>e.due).map(e=>daysDiff(e.due)).filter(d=>d!==null);
     if(!ds.length) return {label:'No date',cls:'tag-nodate'};
     const m=Math.min(...ds);
@@ -669,6 +794,17 @@
   window.addEventListener('offline',()=>updateStatus(false));
   window.addEventListener('online', ()=>updateStatus(true));
 
+  // ── Autocomplete: refresh datalists with regular customers + existing customer names ──
+  function refreshAutocomplete(){
+    const names = [...new Set([
+      ...window._regularCustomers,
+      ...window._customers.map(c=>c.name)
+    ])].sort();
+    const html = names.map(n=>`<option value="${n.replace(/"/g,'&quot;')}">`).join('');
+    document.querySelectorAll('datalist').forEach(dl => dl.innerHTML = html);
+  }
+  window.refreshAutocomplete = refreshAutocomplete;
+
   // ── Tab switching ──
   function switchTab(name, btn){
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
@@ -682,7 +818,7 @@
   window.switchTab = switchTab;
 
   // ── Ledger ──
-  function renderAll(){ renderMetrics(); renderList(); }
+  function renderAll(){ renderMetrics(); renderList(); refreshAutocomplete(); }
   window.renderAll = renderAll;
 
   function renderMetrics(){
@@ -696,7 +832,7 @@
   function renderList(){
     const q=document.getElementById('searchBox').value.toLowerCase();
     const f=document.getElementById('filterStatus').value;
-    const ord={'tag-overdue':0,'tag-soon':1,'tag-ok':2,'tag-nodate':3};
+    const ord={'tag-overdue':0,'tag-soon':1,'tag-ok':2,'tag-nodate':3,'tag-paid':4};
     let list=window._customers
       .filter(c=>{
         const m=c.name.toLowerCase().includes(q)||(c.phone||'').includes(q);
@@ -716,11 +852,14 @@
     el.innerHTML=list.map(c=>{
       const tag=tagOf(c),rem=nextReminder(c),remD=rem?daysDiff(rem):null;
       const remF=(remD!==null&&remD<=3)?`<span class="reminder-flag"> · Reminder ${remD<0?'overdue':'in '+remD+'d'}</span>`:'';
+      const paid=totalPaid(c);
+      const paidNote=paid>0?`<span style="color:var(--green-text);font-size:11px;margin-left:6px">✓ ${fmt(paid)} received</span>`:'';
       return `<div class="customer-card" onclick="openDetail('${c.id}')">
         <div class="avatar">${initials(c.name)}</div>
         <div class="card-body">
           <div class="card-name">${c.name}</div>
           <div class="card-sub">${c.phone}${c.store?' · '+c.store:''}${remF}</div>
+          ${paid>0?`<div class="card-sub" style="margin-top:2px">${paidNote}</div>`:''}
         </div>
         <div class="card-right">
           <div class="card-amount">${fmt(totalDue(c))}</div>
@@ -762,13 +901,13 @@
     ['pb_name','pb_phone','pb_notes'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('pb_store').value='';
     document.getElementById('pb_date').value=new Date().toISOString().slice(0,10);
+    document.getElementById('pb_regular').checked=false;
     _pbImgs=[null,null];
     [1,2].forEach(n=>{
       document.getElementById('pb_preview'+n).innerHTML='';
       document.getElementById('pb_img'+n+'_input').value='';
     });
-    const dl=document.getElementById('partyNameList');
-    dl.innerHTML=window._customers.map(c=>`<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
+    refreshAutocomplete();
     document.getElementById('addPendingModal').classList.add('open');
   }
   window.openAddPendingModal = openAddPendingModal;
@@ -776,7 +915,6 @@
   function handleImgUpload(slot){
     const file=document.getElementById('pb_img'+slot+'_input').files[0];
     if(!file) return;
-    // Resize to max 800px wide before storing to keep Firestore doc small
     const reader=new FileReader();
     reader.onload=function(ev){
       const img=new Image();
@@ -811,6 +949,7 @@
   async function addPendingBill(){
     const name=document.getElementById('pb_name').value.trim();
     if(!name){alert('Name is required.');return;}
+    const isRegular=document.getElementById('pb_regular').checked;
     try{
       await window._fbPBAdd({
         name, phone: document.getElementById('pb_phone').value.trim(),
@@ -819,6 +958,7 @@
         notes: document.getElementById('pb_notes').value.trim(),
         img1:  _pbImgs[0]||null, img2: _pbImgs[1]||null
       });
+      if(isRegular && window._fbRCAdd) await window._fbRCAdd(name);
       closeModal('addPendingModal');
     }catch(e){alert('Save failed: '+e.message);}
   }
@@ -849,17 +989,16 @@
     const b=window._pendingBills.find(x=>x.id===activePBId);
     if(!b) return;
     closeModal('pendingDetailModal');
-    // Switch to ledger tab
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.getElementById('tab-ledger').classList.add('active');
     document.getElementById('tab-btn-ledger').classList.add('active');
-    // Prefill add modal
     ['inp_amount','inp_due','inp_reminder'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('inp_name').value  = b.name;
     document.getElementById('inp_phone').value = b.phone||'';
     document.getElementById('inp_store').value = b.store||'';
     document.getElementById('inp_note').value  = b.notes||'';
+    document.getElementById('inp_regular').checked = false;
     document.getElementById('addModal').classList.add('open');
   }
   window.convertToLedger = convertToLedger;
@@ -874,8 +1013,8 @@
     ['inp_name','inp_phone','inp_note'].forEach(id=>document.getElementById(id).value='');
     ['inp_amount','inp_due','inp_reminder'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('inp_store').value='';
-    document.getElementById('partyNameList').innerHTML=
-      window._customers.map(c=>`<option value="${c.name.replace(/"/g,'&quot;')}">`).join('');
+    document.getElementById('inp_regular').checked=false;
+    refreshAutocomplete();
     document.getElementById('addModal').classList.add('open');
   }
 
@@ -884,12 +1023,15 @@
     const phone=document.getElementById('inp_phone').value.trim();
     const amount=parseFloat(document.getElementById('inp_amount').value);
     if(!name||!phone||!amount){alert('Name, phone and amount are required.');return;}
+    const isRegular=document.getElementById('inp_regular').checked;
     try{
       await window._fbAdd({name,phone,store:document.getElementById('inp_store').value,
         entries:[{id:'e'+Date.now(),amount,due:document.getElementById('inp_due').value,
           reminder:document.getElementById('inp_reminder').value,
           note:document.getElementById('inp_note').value.trim(),
-          date:new Date().toISOString().slice(0,10)}]});
+          date:new Date().toISOString().slice(0,10)}],
+        payments:[]});
+      if(isRegular && window._fbRCAdd) await window._fbRCAdd(name);
       closeModal('addModal');
     }catch(e){alert('Save failed: '+e.message);}
   }
@@ -899,11 +1041,16 @@
     activeId=id;
     const c=window._customers.find(x=>x.id===id);
     if(!c) return;
+    const billed=totalBilled(c), paid=totalPaid(c), due=totalDue(c);
     document.getElementById('dm_name').textContent    = c.name;
     document.getElementById('dm_sub').textContent     = c.phone+(c.store?' · '+c.store:'');
-    document.getElementById('dm_total').textContent   = fmt(totalDue(c));
+    document.getElementById('dm_billed').textContent  = fmt(billed);
+    document.getElementById('dm_paid').textContent    = fmt(paid);
+    document.getElementById('dm_total').textContent   = fmt(due);
     document.getElementById('dm_entries').textContent = (c.entries||[]).length;
     document.getElementById('dm_reminder').textContent= fmtDate(nextReminder(c));
+
+    // Ledger entries
     document.getElementById('dm_ledger').innerHTML=(c.entries||[]).map((e,i)=>`
       <div class="ledger-row">
         <div>
@@ -918,10 +1065,60 @@
           </div>
         </div>
       </div>`).join('');
+
+    // Payment history
+    const payments=c.payments||[];
+    document.getElementById('dm_payments_total').textContent = paid>0?`Total: ${fmt(paid)}`:'';
+    if(payments.length===0){
+      document.getElementById('dm_payments').innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0">No payments recorded yet.</div>';
+    } else {
+      document.getElementById('dm_payments').innerHTML=payments.map((p,i)=>`
+        <div class="ledger-row">
+          <div>
+            <div class="ledger-amount payment">+ ${fmt(p.amount)}</div>
+            <div class="ledger-meta">${p.note||'—'} · ${fmtDate(p.date)}</div>
+          </div>
+          <div class="ledger-right">
+            <button class="btn btn-sm" style="color:var(--red-dark);border-color:var(--red-mid)" onclick="removePayment(${i});event.stopPropagation()">Remove</button>
+          </div>
+        </div>`).join('');
+    }
+
+    // Reset payment form
+    document.getElementById('pay_amt').value='';
+    document.getElementById('pay_note').value='';
+    document.getElementById('pay_date').value=new Date().toISOString().slice(0,10);
+
+    // Reset add-entry form
     ['add_amt','add_note','add_due','add_reminder'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('add_store').value='';
+
     document.getElementById('detailModal').classList.add('open');
   }
+
+  // ── Record payment ──
+  async function recordPayment(){
+    const amt=parseFloat(document.getElementById('pay_amt').value);
+    if(!amt||amt<=0){alert('Enter a valid payment amount.');return;}
+    const c=window._customers.find(x=>x.id===activeId);
+    const payments=[...(c.payments||[]),{
+      id:'p'+Date.now(), amount:amt,
+      date:document.getElementById('pay_date').value,
+      note:document.getElementById('pay_note').value.trim()
+    }];
+    await window._fbUpdate(activeId,{payments});
+    openDetail(activeId);
+  }
+  window.recordPayment = recordPayment;
+
+  // ── Remove payment ──
+  async function removePayment(idx){
+    if(!confirm('Remove this payment record?')) return;
+    const c=window._customers.find(x=>x.id===activeId);
+    await window._fbUpdate(activeId,{payments:(c.payments||[]).filter((_,i)=>i!==idx)});
+    openDetail(activeId);
+  }
+  window.removePayment = removePayment;
 
   async function addEntry(){
     const amt=parseFloat(document.getElementById('add_amt').value);
@@ -975,7 +1172,7 @@
   }
 
   async function markPaid(){
-    if(!confirm('Mark as fully paid and remove?')) return;
+    if(!confirm('Mark as fully paid and remove customer?')) return;
     await window._fbDelete(activeId); closeModal('detailModal');
   }
 
@@ -987,8 +1184,9 @@
   function openWACompose(){
     const c=window._customers.find(x=>x.id===activeId);
     const soon=(c.entries||[]).filter(e=>e.due).sort((a,b)=>a.due.localeCompare(b.due))[0];
+    const due=totalDue(c);
     document.getElementById('wa_msg').value=
-      `Namaste ${c.name} ji,\n\nYeh Nandwani Handloom ki taraf se reminder hai.\n\nAapka outstanding balance: ${fmt(totalDue(c))}${soon?'\nDue date: '+fmtDate(soon.due):''}.\n\nKripya jald settlement karein.\n\nDhanyawad,\nNandwani Handloom, Katihar`;
+      `Namaste ${c.name} ji,\n\nYeh Nandwani Handloom ki taraf se reminder hai.\n\nAapka outstanding balance: ${fmt(due)}${soon?'\nDue date: '+fmtDate(soon.due):''}.\n\nKripya jald settlement karein.\n\nDhanyawad,\nNandwani Handloom, Katihar`;
     document.getElementById('waModal').classList.add('open');
   }
 
