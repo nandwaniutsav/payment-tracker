@@ -388,6 +388,7 @@
   <div class="tabs">
     <button class="tab-btn active" id="tab-btn-ledger" onclick="switchTab('ledger',this)">💳 Outstanding Ledger</button>
     <button class="tab-btn" id="tab-btn-pending" onclick="switchTab('pending',this)">📋 Pending Bills <span class="tab-badge" id="pendingBadge">0</span></button>
+    <button class="tab-btn" id="tab-btn-regulars" onclick="switchTab('regulars',this)">👥 Regular Customers <span class="tab-badge" id="regularsBadge" style="background:#16a34a">0</span></button>
   </div>
 
   <!-- TAB: LEDGER -->
@@ -426,6 +427,39 @@
         <input type="text" id="pendingSearch" placeholder="Search by name or notes..." oninput="renderPendingList()"/>
       </div>
       <div id="pendingListContainer"><div style="text-align:center;padding:60px;color:var(--text-muted)">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- TAB: REGULAR CUSTOMERS -->
+  <div class="tab-panel" id="tab-regulars">
+    <div class="container">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-size:15px;font-weight:700">Regular Customers</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px">Names saved for autocomplete across all forms</div>
+        </div>
+        <button class="btn btn-green" onclick="openAddRegularModal()">+ Add name</button>
+      </div>
+      <div class="toolbar">
+        <input type="text" id="regularSearch" placeholder="Search by name..." oninput="renderRegularList()"/>
+      </div>
+      <div id="regularListContainer"><div style="text-align:center;padding:60px;color:var(--text-muted)">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD REGULAR CUSTOMER MODAL -->
+<div class="modal-overlay" id="addRegularModal">
+  <div class="modal">
+    <div class="modal-header"><span class="modal-title">Add regular customer</span><button class="modal-close" onclick="closeModal('addRegularModal')">×</button></div>
+    <div class="field" style="margin-bottom:16px">
+      <label>Name *</label>
+      <input id="rc_name" placeholder="e.g. Ramesh Gupta" autocomplete="off"/>
+    </div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">This name will appear in the autocomplete dropdown across all Add forms.</div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal('addRegularModal')">Cancel</button>
+      <button class="btn btn-green" onclick="saveRegularCustomer()">Save</button>
     </div>
   </div>
 </div>
@@ -705,8 +739,11 @@
       }
       if (!unsubRC) {
         unsubRC = onSnapshot(rcColRef, snap => {
-          window._regularCustomers = snap.docs.map(d => d.data().name).filter(Boolean).sort();
+          window._rcDocs = snap.docs.map(d => ({ id: d.id, name: d.data().name, addedAt: d.data().addedAt })).filter(x=>x.name);
+          window._regularCustomers = window._rcDocs.map(d=>d.name).sort();
           window.refreshAutocomplete();
+          window.renderRegularList();
+          document.getElementById('regularsBadge').textContent = window._rcDocs.length;
         });
       }
     } else {
@@ -741,6 +778,9 @@
     const key = name.trim().toLowerCase().replace(/\s+/g,'_');
     await setDoc(doc(db, "regularCustomers", key), { name: name.trim(), addedAt: serverTimestamp() });
   };
+  window._fbRCDelete = async (id) => {
+    await deleteDoc(doc(db, "regularCustomers", id));
+  };
 </script>
 
 <!-- ══ APP LOGIC ══ -->
@@ -748,6 +788,7 @@
   window._customers       = [];
   window._pendingBills    = [];
   window._regularCustomers = [];
+  window._rcDocs          = [];
   let currency   = localStorage.getItem('nn_currency') || '₹';
   let activeId   = null;
   let activePBId = null;
@@ -812,8 +853,13 @@
     document.getElementById('tab-'+name).classList.add('active');
     btn.classList.add('active');
     const addBtn = document.getElementById('headerAddBtn');
-    if(name==='pending'){ addBtn.onclick = openAddPendingModal; }
-    else                { addBtn.onclick = openAddModal; }
+    if(name==='pending'){
+      addBtn.textContent='+ Add'; addBtn.onclick = openAddPendingModal; addBtn.style.display='';
+    } else if(name==='regulars'){
+      addBtn.textContent='+ Add name'; addBtn.onclick = openAddRegularModal; addBtn.style.display='';
+    } else {
+      addBtn.textContent='+ Add'; addBtn.onclick = openAddModal; addBtn.style.display='';
+    }
   }
   window.switchTab = switchTab;
 
@@ -1201,6 +1247,55 @@
   document.querySelectorAll('.modal-overlay').forEach(el=>{
     el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
   });
+
+  // ── Regular customers tab ──
+  function renderRegularList(){
+    const q=(document.getElementById('regularSearch')||{value:''}).value.toLowerCase();
+    const list=(window._rcDocs||[])
+      .filter(r=>r.name.toLowerCase().includes(q))
+      .sort((a,b)=>a.name.localeCompare(b.name));
+    const el=document.getElementById('regularListContainer');
+    if(!el) return;
+    if(!list.length){
+      el.innerHTML=`<div class="empty"><div class="empty-icon">👥</div><p>${(window._rcDocs||[]).length===0?'No regular customers yet. Add names to save them for autocomplete.':'No results.'}</p></div>`;
+      return;
+    }
+    el.innerHTML=list.map(r=>`
+      <div class="customer-card" style="cursor:default">
+        <div class="avatar green">${initials(r.name)}</div>
+        <div class="card-body">
+          <div class="card-name">${r.name}</div>
+          <div class="card-sub">Saved for autocomplete</div>
+        </div>
+        <div class="card-right">
+          <button class="btn btn-sm" style="color:var(--red-dark);border-color:var(--red-mid)" onclick="deleteRegularCustomer('${r.id}','${r.name.replace(/'/g,"\\'")}')">Remove</button>
+        </div>
+      </div>`).join('');
+  }
+  window.renderRegularList = renderRegularList;
+
+  function openAddRegularModal(){
+    document.getElementById('rc_name').value='';
+    document.getElementById('addRegularModal').classList.add('open');
+    setTimeout(()=>document.getElementById('rc_name').focus(),100);
+  }
+  window.openAddRegularModal = openAddRegularModal;
+
+  async function saveRegularCustomer(){
+    const name=document.getElementById('rc_name').value.trim();
+    if(!name){alert('Name is required.');return;}
+    try{
+      await window._fbRCAdd(name);
+      closeModal('addRegularModal');
+    }catch(e){alert('Save failed: '+e.message);}
+  }
+  window.saveRegularCustomer = saveRegularCustomer;
+
+  async function deleteRegularCustomer(id, name){
+    if(!confirm(`Remove "${name}" from regular customers?`)) return;
+    await window._fbRCDelete(id);
+  }
+  window.deleteRegularCustomer = deleteRegularCustomer;
 
   window.openAddModal=openAddModal;     window.addCustomer=addCustomer;
   window.openDetail=openDetail;         window.addEntry=addEntry;
